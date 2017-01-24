@@ -14,4 +14,4 @@ def run():
 	return normalize(words)
 
 
-print run()
+print run(sentence)
