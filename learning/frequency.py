@@ -35,5 +35,4 @@ the moment, so blinded by desire, that they cannot foresee"""
 result = run(sentence)
 freq =  FreqDist(result)
 
-for term in freq.keys():
-	print term + ": "+ str(freq[term])
+print freq.most_common()
