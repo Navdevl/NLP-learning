@@ -17,9 +17,14 @@ from pprint import pprint
  ('beautiful', 'JJ'),
  ('poems', 'NNS')]
 '''
-TRAIN_SPLIT = 0.75
+TRAIN_SPLIT = 1
+#tagged_sentences= pos_tag(brown.sents()[0])
+tagged_sentences = [[
+(u'This', u'AT'), (u'Fulton', u'NP-TL'), (u'County', u'NN-TL'), (u'Naveen', u'NN'), (u'Jury', u'NN-TL'), (u'said', u'NN'),
+(u'Friday', u'NR'), (u'an', u'AT'), (u'investigation', u'NN'), (u'of', u'IN'), (u"Atlanta's", u'NP$'), (u'recent', u'JJ')
+]]
 
-tagged_sentences = brown.tagged_sents()
+
 def features(sentence, index):
     """ sentence: [w1, w2, ...], index: the index of the word """
     return {
@@ -50,25 +55,30 @@ def untag(tagged_sentence):
 
 def to_dataset(tagged_sentences):
 	x,y = [],[]
-	for tagged in tagged_sentences[:1]:
+	for tagged in tagged_sentences:
 		for index in range(len(tagged)):
 			x.append(features(untag(tagged),index))
 			y.append(tagged[index][1])
 	return x,y
 
-features,predicts = to_dataset(training_sentences)
 
-classifier = Pipeline([
+feature,predict = to_dataset(training_sentences[:])
+
+classfier = Pipeline([
     ('vectorizer', DictVectorizer(sparse=False)),
     ('classifier', DecisionTreeClassifier(criterion='entropy'))
 ])
  
-classifier.fit(features[:10000], predicts[:10000])
-print 'Training completed'
+classfier.fit(feature[:], predict[:])   # Use only the first 10K samples if you're running it multiple times. It takes a fair bit :)
  
-X_test, y_test = transform_to_dataset(test_sentences)
- 
-print "Accuracy:", classfier.score(X_test, y_test)
+
+def pos_tag(sentence):
+    tagged_sentence = []
+    tags = classfier.predict([features(sentence, index) for index in range(len(sentence))])
+    return zip(sentence, tags)
+
+#Because of our trained tagger says 'said' as NOUN 
+print pos_tag(word_tokenize('This is said friend, John.'))
 
 
 
