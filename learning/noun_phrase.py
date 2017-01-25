@@ -13,9 +13,3 @@ cp = nltk.RegexpParser(r'''
 	NP: 
 	{<JJ><N.*>}   
 	''')
-
-for sent in tagged_sents[:5]:
-	chunked_sent = cp.parse(sent)
-	for chunked in chunked_sent.subtrees():
-		if chunked.label() == 'NP':
-			print chunked
